@@ -38,6 +38,7 @@ MouseArea {
     PopupToolTip {
         extraVisibleCondition: root.containsMouse
         alternativeVisibleCondition: extraVisibleCondition
+        anchorEdges: (!Config.options.bar.bottom && !Config.options.bar.vertical) ? Edges.Bottom : Edges.Top
         text: Translation.tr("Pending updates: %1").arg(Updates.count)
     }
 }
