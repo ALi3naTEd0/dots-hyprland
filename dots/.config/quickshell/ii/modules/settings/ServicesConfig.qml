@@ -205,7 +205,7 @@ ContentPage {
 
     ContentSection {
         icon: "deployed_code_update"
-        title: Translation.tr("System updates (Arch only)")
+        title: Translation.tr("System updates")
 
         ConfigSwitch {
             text: Translation.tr("Enable update checks")
@@ -236,6 +236,42 @@ ContentPage {
             stepSize: 5
             onValueChanged: {
                 Config.options.updates.adviseUpdateThreshold = value;
+            }
+        }
+
+        ConfigSwitch {
+            text: Translation.tr("Include Flatpak updates")
+            checked: Config.options.updates.includeFlatpak
+            onCheckedChanged: {
+                Config.options.updates.includeFlatpak = checked;
+            }
+        }
+
+        ContentSubsection {
+            title: Translation.tr("AUR helper (Arch only)")
+
+            ConfigSelectionArray {
+                currentValue: Config.options.updates.aurHelper
+                onSelected: newValue => {
+                    Config.options.updates.aurHelper = newValue;
+                }
+                options: [
+                    {
+                        displayName: Translation.tr("None"),
+                        icon: "block",
+                        value: ""
+                    },
+                    {
+                        displayName: "yay",
+                        icon: "package_2",
+                        value: "yay"
+                    },
+                    {
+                        displayName: "paru",
+                        icon: "package_2",
+                        value: "paru"
+                    }
+                ]
             }
         }
     }
