@@ -15,7 +15,7 @@ MouseArea {
     hoverEnabled: true
     cursorShape: Qt.PointingHandCursor
 
-    onClicked: Quickshell.execDetached(["bash", "-c", Config.options.apps.update])
+    onClicked: Quickshell.execDetached(["bash", "-c", Updates.updateCommand])
 
     RowLayout {
         id: rowLayout
