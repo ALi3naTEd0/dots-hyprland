@@ -203,31 +203,42 @@ ContentPage {
         }
     }
 
-    // There's no update indicator in ii for now so we shouldn't show this yet
-    // ContentSection {
-    //     icon: "deployed_code_update"
-    //     title: Translation.tr("System updates (Arch only)")
+    ContentSection {
+        icon: "deployed_code_update"
+        title: Translation.tr("System updates (Arch only)")
 
-    //     ConfigSwitch {
-    //         text: Translation.tr("Enable update checks")
-    //         checked: Config.options.updates.enableCheck
-    //         onCheckedChanged: {
-    //             Config.options.updates.enableCheck = checked;
-    //         }
-    //     }
+        ConfigSwitch {
+            text: Translation.tr("Enable update checks")
+            checked: Config.options.updates.enableCheck
+            onCheckedChanged: {
+                Config.options.updates.enableCheck = checked;
+            }
+        }
 
-    //     ConfigSpinBox {
-    //         icon: "av_timer"
-    //         text: Translation.tr("Check interval (mins)")
-    //         value: Config.options.updates.checkInterval
-    //         from: 60
-    //         to: 1440
-    //         stepSize: 60
-    //         onValueChanged: {
-    //             Config.options.updates.checkInterval = value;
-    //         }
-    //     }
-    // }
+        ConfigSpinBox {
+            icon: "av_timer"
+            text: Translation.tr("Check interval (mins)")
+            value: Config.options.updates.checkInterval
+            from: 15
+            to: 1440
+            stepSize: 15
+            onValueChanged: {
+                Config.options.updates.checkInterval = value;
+            }
+        }
+
+        ConfigSpinBox {
+            icon: "visibility"
+            text: Translation.tr("Show indicator above (packages)")
+            value: Config.options.updates.adviseUpdateThreshold
+            from: 0
+            to: 1000
+            stepSize: 5
+            onValueChanged: {
+                Config.options.updates.adviseUpdateThreshold = value;
+            }
+        }
+    }
 
     ContentSection {
         icon: "weather_mix"
