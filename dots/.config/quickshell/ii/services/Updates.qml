@@ -20,6 +20,7 @@ Singleton {
 
     readonly property bool available: hasCheckupdates || includeFlatpak
     property alias checking: checkUpdatesProc.running
+    property bool refreshPending: false
     property int count: 0
     
     readonly property bool updateAdvised: available && count > Config.options.updates.adviseUpdateThreshold
@@ -47,6 +48,11 @@ Singleton {
     function load() {}
     function refresh() {
         if (!available) return;
+        if (checking) {
+            // A check that started mid-transaction would report a stale count
+            refreshPending = true;
+            return;
+        }
         print("[Updates] Checking for system updates")
         checkUpdatesProc.running = true;
     }
@@ -55,6 +61,33 @@ Singleton {
         target: Config.options.updates
         function onAurHelperChanged() { root.refresh(); }
         function onIncludeFlatpakChanged() { root.refresh(); }
+    }
+
+    // Count again once a transaction settles, wherever it was run from: the timer
+    // alone leaves the indicator stale for up to checkInterval after updating.
+    // preload is off so the log is watched without being read.
+    FileView {
+        path: "/var/log/pacman.log"
+        preload: false
+        watchChanges: root.hasCheckupdates
+        onFileChanged: transactionSettleTimer.restart()
+    }
+    FileView {
+        path: "/var/lib/flatpak/.changed"
+        preload: false
+        watchChanges: root.includeFlatpak
+        onFileChanged: transactionSettleTimer.restart()
+    }
+    FileView {
+        path: FileUtils.trimFileProtocol(`${Directories.home}/.local/share/flatpak/.changed`)
+        preload: false
+        watchChanges: root.includeFlatpak
+        onFileChanged: transactionSettleTimer.restart()
+    }
+    Timer {
+        id: transactionSettleTimer
+        interval: 3000
+        onTriggered: root.refresh()
     }
 
     Timer {
@@ -88,6 +121,11 @@ Singleton {
             onStreamFinished: {
                 root.count = parseInt(text.trim());
             }
+        }
+        onExited: {
+            if (!root.refreshPending) return;
+            root.refreshPending = false;
+            root.refresh();
         }
     }
 }
